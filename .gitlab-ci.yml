@@ -1,0 +1,142 @@
+default:
+  image: registry.gitlab.com/gemseo/dev/gemseo-java/multi-python-java
+
+# Stages executed sequentially until a job fails.
+stages:
+  - check
+  - tests
+  - coverage
+
+variables:
+  CODECOV_VERSION: "2.1.12"
+
+workflow:
+  # Prevent duplicated pipelines,
+  # see https://docs.gitlab.com/14.3/ee/ci/yaml/index.html#switch-between-branch-pipelines-and-merge-request-pipelines.
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
+      when: never
+    - if: '$CI_COMMIT_BRANCH'
+
+# Base job template.
+.base:
+  interruptible: true
+  script:
+    # Run a tox env named after a job name.
+    - tox -e $TOX_ENV_NAME
+
+# Specific settings for linux jobs.
+.linux:
+  tags:
+    - gemseo-docker
+  variables:
+    # Caches on the CI runner host.
+    PIP_CACHE_DIR: "/opt/gitlab-runner-cache/pip"
+
+
+# Specific settings for windows jobs.
+.windows:
+  tags:
+    - gemseo-windows-server-2012
+  variables:
+    # Caches on the CI runner host.
+    PIP_CACHE_DIR: "C:\\pip"
+
+# Jobs for the check stage.
+style:
+  extends:
+    - .base
+    - .linux
+  stage: check
+  variables:
+    PRE_COMMIT_HOME: "$CI_PROJECT_DIR/.cache/pre-commit"
+    # Pass the cache locations through the tox env.
+    TOX_TESTENV_PASSENV: PIP_CACHE_DIR PRE_COMMIT_HOME
+    TOX_ENV_NAME: style
+  cache:
+    - key:
+        files:
+          - .pre-commit-config.yaml
+        prefix: pre-commit-cache
+      paths:
+        - .cache/pre-commit
+
+# Tests stage.
+
+# Base tests job, common to all the tests jobs.
+.tests:
+  extends: .base
+  stage: tests
+  variables:
+    COVERAGE_FILE: $CI_JOB_ID-coverage.xml
+    # Use coverage and generate reports,
+    # via env variables because passing extra command line options to tox within the current file is cumbersome.
+    # The junitxml is for showing the number of tests if gitlab UI.
+    PYTEST_ADDOPTS: --cov --cov-report=xml --junitxml=report.xml
+    TOX_TESTENV_PASSENV: PYTEST_ADDOPTS
+  artifacts:
+    # Send the artifacts even on job failure.
+    when: always
+    reports:
+      junit: report.xml
+      cobertura: $COVERAGE_FILE
+    paths:
+      # For the coverage stage.
+      - $COVERAGE_FILE
+
+# Common settings for windows tests jobs.
+.tests-windows:
+  extends:
+    - .tests
+    - .windows
+  after_script:
+    - Rename-Item coverage.xml $COVERAGE_FILE
+    # Workaround coverage files path issues, see https://gitlab.com/gitlab-org/gitlab/-/issues/217664
+    - (Get-Content $COVERAGE_FILE) -replace 'filename=".*/site-packages', 'filename="src' |  Out-File "$COVERAGE_FILE"
+
+# Common settings for linux (linux) jobs.
+.tests-linux:
+  extends:
+    - .tests
+    - .linux
+  after_script:
+    - mv coverage.xml $COVERAGE_FILE
+    # Workaround coverage files path issues, see https://gitlab.com/gitlab-org/gitlab/-/issues/217664
+    - sed "s|filename=\".*/site-packages|filename=\"src|" -i $COVERAGE_FILE
+
+# Jobs for the tests stage.
+
+.base-tests:
+  parallel:
+    matrix:
+      - TOX_ENV_NAME:
+        - py36
+        - py37
+        - py38
+        - py39
+
+linux:
+  extends:
+    - .base-tests
+    - .tests-linux
+
+# windows:
+#   extends:
+#     - .base-tests
+#     - .tests-windows
+
+# Job for the coverage analysis.
+codecov:
+  stage: coverage
+  extends:
+    - .base
+    - .linux
+  rules:
+    # Only run this job for projects on gitlab.com.
+    - if: '$CI_SERVER_URL == "https://gitlab.com"'
+  script:
+    # Install codecov uploader.
+    - pip install install codecov==$CODECOV_VERSION
+    # Run codecov uploader.
+    - codecov -t $CODECOV_TOKEN -f *-coverage.xml --required
