@@ -11,9 +11,9 @@ GEMSEO java interface
 
 Contains two Java-GEMSEO interfaces:
 
-- One is based on `JNIUS<https://pyjnius.readthedocs.io/en/stable>`_
+- One is based on JNIUS (https://pyjnius.readthedocs.io/en/stable)
   to call a Java implementation from a standard Python GEMSEO scenario.
-- The other is based on `JEP<https://github.com/ninia/je>`_
+- The other is based on JEP (https://github.com/ninia/je)
   to make a Java code create and use a GEMSEO scenario,
   eventually containing GEMSEO disciplines implemented in Java.
 
@@ -35,7 +35,7 @@ At runtime, you shall configure:
 - ``CLASSPATH``: add the jep package provided when installing jep in the Python
   distribution to the java classpassth,
 
-See the `JEP<https://github.com/ninia/jep/wiki/Getting-Started>`_ documentations for further information.
+See the JEP (https://github.com/ninia/jep/wiki/Getting-Started) documentations for further information.
 
 Java MDODiscipline
 ------------------
@@ -61,7 +61,7 @@ you shall wrap the ``MDODiscipline`` wrapper using the ``JepMDODisciplineAdapter
 Examples
 --------
 
-Please look at :file:`examples/java_examples` and :file:`examples/python_examples`.
+Please look at examples/java_examples and examples/python_examples.
 
 Frequent issues
 ---------------
@@ -94,9 +94,9 @@ This is why the two solutions are proposed here.
 Authors
 -------
 
-François Gallard
-Pascal Le Métayer
-Antoine Dechaume
+- François Gallard
+- Pascal Le Métayer
+- Antoine Dechaume
 
 License
 -------
