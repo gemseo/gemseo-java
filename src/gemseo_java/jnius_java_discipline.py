@@ -16,8 +16,13 @@
 #    INITIAL AUTHORS - initial API and implementation and/or initial
 #                           documentation
 #        :author: Francois Gallard
+#        :author: Antoine Dechaume
 #    OTHER AUTHORS   - MACROSCOPIC CHANGES
 """Python wrapper for Java Disciplines."""
+from __future__ import annotations
+
+from typing import Mapping
+
 from gemseo.core.discipline import MDODiscipline
 from jnius import autoclass
 from numpy import array
@@ -54,7 +59,7 @@ def to_java(value):
         for v in value:
             java_value.add(Double(v))
         return java_value
-    if isinstance(value, dict):
+    if isinstance(value, Mapping):
         java_map = HashMap()
         for k, v in value.items():
             java_map.put(String(k), to_java(v))

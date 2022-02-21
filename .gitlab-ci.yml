@@ -111,7 +111,6 @@ style:
   parallel:
     matrix:
       - TOX_ENV_NAME:
-        - py36
         - py37
         - py38
         - py39
