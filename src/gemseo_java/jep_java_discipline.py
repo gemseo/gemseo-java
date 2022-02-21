@@ -16,8 +16,11 @@
 #    INITIAL AUTHORS - initial API and implementation and/or initial
 #                           documentation
 #        :author: Francois Gallard
+#        :author: Antoine Dechaume
 #    OTHER AUTHORS   - MACROSCOPIC CHANGES
 """XXX."""
+from __future__ import annotations
+
 from gemseo.core.discipline import MDODiscipline
 from numpy import fromiter
 
@@ -50,6 +53,5 @@ class JEPJavaDiscipline(MDODiscipline):
         # data_java[String(k)] = v_list
         # data_java = {k: arr.tolist() for k, arr in self.local_data.items()}
         # print(data_java)
-        out = self.__instance.runWithNDArray(self.local_data)
-        out = hashmap2dict(out)
-        self.local_data = out
+        java_local_data = self.__instance.runWithNDArray(dict(self.local_data))
+        self.local_data = hashmap2dict(java_local_data)
