@@ -103,8 +103,9 @@ class JavaDiscipline(MDODiscipline):
     disc=JavaDiscipline('com.irt.saintexupery.problems.sellar.Sellar1')
     """
 
-    def __init__(self, java_class_name, *klass_args):  # noqa: D205,D212,D415
-        """
+    def __init__(self, java_class_name, *klass_args):
+        """Constructor.
+
         Args:
             java_class_name: The java class path.
             *klass_args: The arguments to pass to the constructor use jnius types.
