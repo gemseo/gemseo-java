@@ -114,9 +114,9 @@ class JavaDiscipline(MDODiscipline):
         self.__klass = autoclass(java_class_name)
         self.__instance = self.__klass(*klass_args)
         input_names = [s for s in self.__instance.getInputDataNames()]
-        self.input_grammar.initialize_from_data_names(input_names)
+        self.input_grammar.update(input_names)
         output_names = [s for s in self.__instance.getOutputDataNames()]
-        self.output_grammar.initialize_from_data_names(output_names)
+        self.output_grammar.update(output_names)
         self.default_inputs = to_python(self.__instance.getDefaultInputs())
 
     def _run(self):

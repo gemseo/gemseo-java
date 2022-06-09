@@ -75,7 +75,7 @@ public class SellarScenarioJEP {
 			interp.exec("disciplines=[sellar1,sellar2,sellar_system]");
 			interp.exec(
 					"scenario=create_scenario(disciplines, formulation='MDF', objective_name='obj',design_space=design_space,"
-							+ "main_mda_class='MDAGaussSeidel')");
+							+ "main_mda_name='MDAGaussSeidel')");
 			interp.exec("scenario.add_constraint('c_1','ineq')");
 			interp.exec("scenario.add_constraint('c_2','ineq')");
 			interp.exec("scenario.set_differentiation_method('finite_differences',1e-7)");
