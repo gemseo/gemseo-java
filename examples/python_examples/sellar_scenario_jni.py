@@ -47,7 +47,7 @@ scenario = create_scenario(
     formulation="MDF",
     objective_name="obj",
     design_space=design_space,
-    main_mda_class="MDAGaussSeidel",
+    main_mda_name="MDAGaussSeidel",
 )
 scenario.add_constraint("c_1", "ineq")
 scenario.add_constraint("c_2", "ineq")

@@ -38,9 +38,9 @@ class JEPJavaDiscipline(MDODiscipline):
         super().__init__(name)
         self.__instance = java_discipline
         input_names = self.__instance.getInputDataNames()
-        self.input_grammar.initialize_from_data_names(input_names)
+        self.input_grammar.update(input_names)
         output_names = self.__instance.getOutputDataNames()
-        self.output_grammar.initialize_from_data_names(output_names)
+        self.output_grammar.update(output_names)
         self.default_inputs = hashmap2dict(java_discipline.getDefaultInputs())
 
     def _run(self):
