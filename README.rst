@@ -19,6 +19,7 @@ Contains two Java-GEMSEO interfaces:
 
 Installation
 ------------
+
 Set ``JAVA_HOME``: path to the root installation directory of the Java JDK.
 
 Install with:
